@@ -78,7 +78,7 @@ public class CalculateSales {
 			} catch(IOException e) {
 				System.out.println(UNKNOWN_ERROR);
 				return;
-			}finally{
+			} finally {
 				// ファイルを開いている場合
 				if(br != null) {
 					try {
@@ -113,6 +113,9 @@ public class CalculateSales {
 
 		try {
 			File file = new File(path, fileName);
+			if(!file.exists()) {
+
+			}
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
