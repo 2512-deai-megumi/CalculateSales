@@ -37,6 +37,13 @@ public class CalculateSales {
 	 * @param コマンドライン引数
 	 */
 	public static void main(String[] args) {
+
+		//引数の確認
+		if(args.length != 1) {
+			System.out.println(UNKNOWN_ERROR);
+			return;
+		}
+
 		// 支店コードと支店名を保持するMap
 		Map<String, String> branchNames = new HashMap<>();
 		// 支店コードと売上金額を保持するMap
@@ -48,11 +55,7 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-		//引数の確認
-		if(args.length != 1) {
-			System.out.println(UNKNOWN_ERROR);
-			return;
-		}
+
 
 		//ファイルパス
 		String path = args[0];
@@ -74,11 +77,11 @@ public class CalculateSales {
 		for(int i = 0;i < rcdFiles.size() - 1; i++) {
 			String formerFile = rcdFiles.get(i).getName();
 			String latterFile = rcdFiles.get(i + 1).getName();
-			int formerNum =  Integer.parseInt(formerFile.substring(0,8));
-			int latterNum =  Integer.parseInt(latterFile.substring(0,8));
+			int formerNum =  Integer.parseInt(formerFile.substring(0, 8));
+			int latterNum =  Integer.parseInt(latterFile.substring(0, 8));
 
 			if(latterNum - formerNum != 1) {
-				System.out.println( FILE_NOT_CONCECTIVE_NUMBER);
+				System.out.println(FILE_NOT_CONCECTIVE_NUMBER);
 				return;
 			}
 
@@ -112,8 +115,8 @@ public class CalculateSales {
 				}
 
 				//売り上げ金額が数字なのか確認
-				if(salesList.get(1).matches("\\d")) {
-					System.out.println(fileName + AMOUNT_INVALID);
+				if(!salesList.get(1).matches("[0-9]+")) {
+					System.out.println(UNKNOWN_ERROR);
 					return;
 				}
 
