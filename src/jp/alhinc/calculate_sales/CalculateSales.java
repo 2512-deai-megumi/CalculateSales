@@ -322,15 +322,15 @@ public class CalculateSales {
 
 
 	/**
-	 * 支店別集計ファイル書き込み処理
+	 * ファイル書き込み処理
 	 *
 	 * @param フォルダパス
 	 * @param ファイル名
-	 * @param 支店コードと支店名を保持するMap
-	 * @param 支店コードと売上金額を保持するMap
+	 * @param 支店コード(商品コード)と支店名を保持するMap
+	 * @param 支店コード(商品コード)と売上金額を保持するMap
 	 * @return 書き込み可否
 	 */
-	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
+	private static boolean writeFile(String path, String fileName, Map<String, String> Names, Map<String, Long> Sales) {
 		// ※ここに書き込み処理を作成してください。(処理内容3-1)
 		File file = new File(path, fileName);
 		BufferedWriter bw = null;
@@ -339,8 +339,8 @@ public class CalculateSales {
 			FileWriter filewriter = new FileWriter(file);
 			bw = new BufferedWriter(filewriter);
 			//出力ファイルに書き込む
-			for(String key: branchNames.keySet()) {
-				bw.write(key + "," + branchNames.get(key) + "," + branchSales.get(key));
+			for(String key: Names.keySet()) {
+				bw.write(key + "," + Names.get(key) + "," + Sales.get(key));
 				bw.newLine();
 			}
 
@@ -362,45 +362,6 @@ public class CalculateSales {
 		return true;
 	}
 
-	/**
-	 * 商品別集計ファイル書き込み処理
-	 *
-	 * @param フォルダパス
-	 * @param ファイル名
-	 * @param 支店コードと支店名を保持するMap
-	 * @param 支店コードと売上金額を保持するMap
-	 * @return 書き込み可否
-	 */
-	private static boolean writeCommodityFile(String path, String fileName, Map<String, String> commodityNames, Map<String, Long> commoditySales) {
-		// ※ここに書き込み処理を作成してください。(処理内容3-1)
-		File file = new File(path, fileName);
-		BufferedWriter bw = null;
 
-		try {
-			FileWriter filewriter = new FileWriter(file);
-			bw = new BufferedWriter(filewriter);
-			//出力ファイルに書き込む
-			for(String key: commodityNames.keySet()) {
-				bw.write(key + "," + commodityNames.get(key) + "," + commoditySales.get(key));
-				bw.newLine();
-			}
-
-		} catch(IOException e) {
-			System.out.println(UNKNOWN_ERROR);
-			return false;
-		} finally {
-			if(bw != null) {
-				try{
-					bw.close();
-				} catch(IOException e) {
-					System.out.println(UNKNOWN_ERROR);
-					return false;
-				}
-			}
-		}
-
-
-		return true;
-	}
 
 }
