@@ -26,6 +26,10 @@ public class CalculateSales {
 	//商品別集計ファイル名
 	private static final String FILE_NAME_COMMODITY_OUT = "commodity.out";
 
+	//ファイル読み込み時に使用する正規表現
+	private static final String SALES_FILE_REGEX ="[0-9]{3}";
+	private static final String COMMODITY_FILE_REGEX ="[0-9a-zA-Z]{8}";
+
 	// エラーメッセージ
 	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました";
 	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません";
@@ -62,12 +66,12 @@ public class CalculateSales {
 		Map<String, Long> commoditySales = new HashMap<>();
 
 		// 支店定義ファイル読み込み処理
-		if(!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
+		if(!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales, SALES_FILE_REGEX,FILE_NOT_EXIST,FILE_INVALID_FORMAT)) {
 			return;
 		}
 
 		//商品定義ファイル読み込み処理
-		if(!readCommodityFile(args[0], FILE_NAME_COMMODITY_LST, commodityNames, commoditySales)) {
+		if(!readFile(args[0], FILE_NAME_COMMODITY_LST, commodityNames, commoditySales, COMMODITY_FILE_REGEX, COMMODITYFILE_NOT_EXIST, COMMODITYFILE_INVALID_FORMAT)) {
 			return;
 		}
 
@@ -208,14 +212,14 @@ public class CalculateSales {
 	 * @return 読み込み可否
 	 */
 
-	private static boolean readFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
+	private static boolean readFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales, String regex, String NOT_EXIST_MESSAGE, String INVALIED_MESSAGE) {
 		BufferedReader br = null;
 
 		try {
 			File file = new File(path, fileName);
 			//ファイルが存在するのか確認
 			if(!file.exists()) {
-				System.out.println(FILE_NOT_EXIST);
+				System.out.println(NOT_EXIST_MESSAGE);
 				return false;
 			}
 			FileReader fr = new FileReader(file);
@@ -228,9 +232,9 @@ public class CalculateSales {
 				String[] branches = line.split(",");
 
 
-				//支店定義ファイルのフォーマットを確認
-				if((branches.length != 2) || (!branches[0].matches("[0-9]{3}"))) {
-					System.out.println(FILE_INVALID_FORMAT);
+				//ファイルのフォーマットを確認
+				if((branches.length != 2) || (!branches[0].matches(regex))) {
+					System.out.println(INVALIED_MESSAGE);
 					return false;
 				}
 				String code = branches[0];
@@ -239,67 +243,6 @@ public class CalculateSales {
 
 				branchNames.put(code, branch);
 				branchSales.put(code, (long) 0);
-			}
-
-		} catch(IOException e) {
-			System.out.println(UNKNOWN_ERROR);
-			return false;
-		} finally {
-			// ファイルを開いている場合
-			if(br != null) {
-				try {
-					// ファイルを閉じる
-					br.close();
-				} catch(IOException e) {
-					System.out.println(UNKNOWN_ERROR);
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * 商品定義ファイル読み込み処理
-	 *
-	 * @param フォルダパス
-	 * @param ファイル名
-	 * @param 支店コードと支店名を保持するMap
-	 * @param 支店コードと売上金額を保持するMap
-	 * @return 読み込み可否
-	 */
-
-	private static boolean readCommodityFile(String path, String fileName, Map<String, String> commodityNames, Map<String, Long> commoditySales) {
-		BufferedReader br = null;
-
-		try {
-			File file = new File(path, fileName);
-			//ファイルが存在するのか確認
-			if(!file.exists()) {
-				System.out.println(COMMODITYFILE_NOT_EXIST);
-				return false;
-			}
-			FileReader fr = new FileReader(file);
-			br = new BufferedReader(fr);
-
-			String line;
-			// 一行ずつ読み込む
-			while((line = br.readLine()) != null) {
-				// ※ここの読み込み処理を変更してください。(処理内容1-2)
-				String[] commodities = line.split(",");
-
-
-				//商品定義ファイルのフォーマットを確認
-				if(( commodities.length != 2) || (! commodities[0].matches("[0-9a-zA-Z]{8}"))) {
-					System.out.println(COMMODITYFILE_INVALID_FORMAT);
-					return false;
-				}
-				String code =  commodities[0];
-				String commodity =  commodities[1];
-
-
-				commodityNames.put(code, commodity);
-				commoditySales.put(code, (long) 0);
 			}
 
 		} catch(IOException e) {
